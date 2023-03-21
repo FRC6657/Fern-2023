@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import javax.swing.plaf.multi.MultiOptionPaneUI;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -59,33 +58,30 @@ public class RobotContainer {
       mIntake.changeState(IntakeConstants.State.IDLE)
     );
 
-    mDriver.x().onTrue(
+    mDriver.povRight().onTrue(
       new InstantCommand(
-        ()-> mPivot.set(0.75),
+        mPivot::zeroEncoder,
         mPivot
       )
     );
 
-    mDriver.x().onFalse(
-      new InstantCommand(
-       ()-> mPivot.set(0),
-       mPivot
-      )
+    mDriver.x().onTrue(
+      mPivot.changeState(PivotConstants.State.L2)
     );
 
     mDriver.y().onTrue(
-      new InstantCommand(
-        ()-> mPivot.set(-0.75),
-        mPivot
-      )
+      mPivot.changeState(PivotConstants.State.CARRY)
     );
 
-    mDriver.y().onFalse(
-      new InstantCommand(
-        ()->mPivot.set(0),
-        mPivot
-      )
+    mDriver.rightBumper().onTrue(
+      mPivot.changeState(PivotConstants.State.L1)
     );
+
+    mDriver.leftBumper().onTrue(
+      mPivot.changeState(PivotConstants.State.CARRY)
+    );
+
+  
 
     mOperator.a().onTrue(
       new ParallelCommandGroup(
@@ -104,8 +100,8 @@ public class RobotContainer {
 
     mOperator.b().onTrue(
       new SequentialCommandGroup(
-        mPivot.changeState(PivotConstants.State.L1),
-        new WaitUntilCommand(mPivot::atTarget),
+        mPivot.changeState(PivotConstants.State.L2),
+        new WaitCommand(0.25),
         mIntake.changeState(IntakeConstants.State.RELEASE)
       )
     );

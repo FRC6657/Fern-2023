@@ -4,25 +4,30 @@
 
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import frc.robot.Constants.RobotConstants;
 import frc.robot.Constants.IntakeConstants.State;
+import frc.robot.Constants.RobotConstants.CAN;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
-  private final CANSparkMax mMotor;
+  private final WPI_TalonSRX mMotor;
   private State mCurrentState;
   public Intake() {
-    mMotor = new CANSparkMax(6, MotorType.kBrushless);
-    mMotor.setSmartCurrentLimit(15);
-    mMotor.setInverted(false);
-    mMotor.enableVoltageCompensation(RobotConstants.maxVoltage);
-    mMotor.burnFlash();
+
+    mMotor = new WPI_TalonSRX(CAN.kIntake);
+    mMotor.configVoltageCompSaturation(RobotConstants.maxVoltage);
+    mMotor.enableVoltageCompensation(true);
+    mMotor.setNeutralMode(NeutralMode.Brake);
+    mMotor.setInverted(true);
+    mMotor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 40, 15, 0));
+
     mCurrentState = State.STARTING;
   }
 

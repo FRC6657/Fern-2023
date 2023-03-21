@@ -12,6 +12,7 @@ import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RobotConstants;
+import frc.robot.Constants.RobotConstants.CAN;
 
 public class Drivetrain extends SubsystemBase {
   private final WPI_TalonSRX mFrontLeft;
@@ -21,11 +22,11 @@ public class Drivetrain extends SubsystemBase {
   private final WPI_PigeonIMU mPigeon;
   private final DifferentialDrive mDifferentialDrive;
   public Drivetrain() {
-    mFrontLeft = new WPI_TalonSRX(1);
-    mFrontRight = new WPI_TalonSRX(2);
-    mBackLeft = new WPI_TalonSRX(3);
-    mBackRight = new WPI_TalonSRX(4);
-    mPigeon = new WPI_PigeonIMU(5);
+    mFrontLeft = new WPI_TalonSRX(CAN.kFrontLeft);
+    mFrontRight = new WPI_TalonSRX(CAN.kFrontRight);
+    mBackLeft = new WPI_TalonSRX(CAN.kBackLeft);
+    mBackRight = new WPI_TalonSRX(CAN.kBackRight);
+    mPigeon = new WPI_PigeonIMU(CAN.kPigeon);
     mBackLeft.follow(mFrontLeft);
     mBackRight.follow(mFrontRight);
     mFrontLeft.configVoltageCompSaturation(RobotConstants.maxVoltage);
@@ -48,9 +49,6 @@ public class Drivetrain extends SubsystemBase {
     mFrontRight.configSupplyCurrentLimit(currentLimit);
     mBackLeft.configSupplyCurrentLimit(currentLimit);
     mBackRight.configSupplyCurrentLimit(currentLimit);
-
-
-    
 
   }
 

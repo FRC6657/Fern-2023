@@ -9,14 +9,24 @@ public class Constants {
 
     public static class RobotConstants{
         public static double maxVoltage = 15;
+        public static class CAN{
+          public static int kFrontLeft = 1;
+          public static int kFrontRight = 2;
+          public static int kBackLeft = 3;
+          public static int kBackRight = 4;
+          public static int kPigeon = 5;
+          public static int kIntake = 6;
+          public static int kPivot = 7;
+
+        }
     }
 
     public static class IntakeConstants {
     
-        public static final double kInSpeed = 0.9;
-        public static final double kOutSpeed = 0.9;
+        public static final double kInSpeed = 0.35;
+        public static final double kOutSpeed = 0.99;
     
-        public static final double kS = 1;
+        public static final double kS = 0;
     
         public static enum State {
           GRAB(-kInSpeed),
@@ -43,18 +53,18 @@ public class Constants {
         public static double kGearing = ((1.0/15)*(16.0/60));
         public static double kVelocityConversion = kGearing*(1/60.0)*360;
         public static double kPositionConversion = kGearing*360;
-        public static double kThroughboreOffset = 0.149;
+        public static double kThroughboreOffset = 0.478;
 
         
     
 
         public static enum State {
           SUBSTATION(0),
-          L1(0),
-          L2(0),
+          L1(15),
+          L2(-15),
           STOP(0),
           STARTING(0),
-          CARRY(0);
+          CARRY(-80);
     
           public final double angle;
     
