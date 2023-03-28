@@ -7,12 +7,36 @@ package frc.robot;
 /** Add your docs here. */
 public class Constants {
 
+  public static class DriveConstants{
+    public static double kTurboForwardSpeed = 1.0;
+    public static double kNormalForwardSpeed = 0.4;
+    public static double kTurboTurningSpeed = 0.5;
+    public static double kNormalTurningSpeed = 0.5
+    ;
+
+    public static enum State {
+      FORWARD(1),
+      REVERSE(-1);
+
+      public final double direction;
+
+      /**
+       * @param direction Motor Percentage
+       */
+      State(double direction) {
+        this.direction = direction;
+      }
+
+    }
+
+  }
+
     public static class RobotConstants{
         public static double maxVoltage = 15;
         public static class CAN{
           public static int kFrontLeft = 1;
-          public static int kFrontRight = 2;
-          public static int kBackLeft = 3;
+          public static int kBackLeft = 2;
+          public static int kFrontRight = 3;
           public static int kBackRight = 4;
           public static int kPigeon = 5;
           public static int kIntake = 6;
@@ -31,6 +55,7 @@ public class Constants {
         public static enum State {
           GRAB(-kInSpeed),
           RELEASE(kOutSpeed),
+          L1RELEASE(0.30),
           IDLE(-kS/12),
           STOP(0),
           STARTING(0);
@@ -53,17 +78,18 @@ public class Constants {
         public static double kGearing = ((1.0/15)*(16.0/60));
         public static double kVelocityConversion = kGearing*(1/60.0)*360;
         public static double kPositionConversion = kGearing*360;
-        public static double kThroughboreOffset = 0.478;
+        public static double kThroughboreOffset = 0.475;
 
         
     
 
         public static enum State {
-          SUBSTATION(0),
-          L1(15),
-          L2(-15),
+          SUBSTATION(-7),
+          L1(60),
+          L2(0),
           STOP(0),
-          STARTING(0),
+          STARTING(-80),
+          FLOOR(108),
           CARRY(-80);
     
           public final double angle;

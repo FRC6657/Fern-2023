@@ -4,14 +4,22 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RobotConstants;
+import frc.robot.Constants.DriveConstants.State;
 import frc.robot.Constants.RobotConstants.CAN;
 
 public class Drivetrain extends SubsystemBase {
@@ -21,12 +29,20 @@ public class Drivetrain extends SubsystemBase {
   private final WPI_TalonSRX mBackRight;
   private final WPI_PigeonIMU mPigeon;
   private final DifferentialDrive mDifferentialDrive;
+  private State mCurrentState;
   public Drivetrain() {
+
     mFrontLeft = new WPI_TalonSRX(CAN.kFrontLeft);
     mFrontRight = new WPI_TalonSRX(CAN.kFrontRight);
     mBackLeft = new WPI_TalonSRX(CAN.kBackLeft);
     mBackRight = new WPI_TalonSRX(CAN.kBackRight);
     mPigeon = new WPI_PigeonIMU(CAN.kPigeon);
+
+    mFrontLeft.configFactoryDefault();
+    mFrontRight.configFactoryDefault();
+    mBackLeft.configFactoryDefault();
+    mBackRight.configFactoryDefault();
+
     mBackLeft.follow(mFrontLeft);
     mBackRight.follow(mFrontRight);
     mFrontLeft.configVoltageCompSaturation(RobotConstants.maxVoltage);
@@ -42,9 +58,17 @@ public class Drivetrain extends SubsystemBase {
     mBackLeft.setNeutralMode(NeutralMode.Brake);
     mBackRight.setNeutralMode(NeutralMode.Brake);
 
+
+    mFrontLeft.setInverted(InvertType.None);
+    mBackLeft.setInverted(InvertType.None);
+    mFrontRight.setInverted(InvertType.InvertMotorOutput);
+    mBackRight.setInverted(InvertType.InvertMotorOutput);
+
+    mCurrentState = State.FORWARD;
+
     mDifferentialDrive = new DifferentialDrive(mFrontLeft, mFrontRight);
 
-    SupplyCurrentLimitConfiguration currentLimit = new SupplyCurrentLimitConfiguration(true, 40, 40, 0);
+    SupplyCurrentLimitConfiguration currentLimit = new SupplyCurrentLimitConfiguration(true, 30, 40, 0);
     mFrontLeft.configSupplyCurrentLimit(currentLimit);
     mFrontRight.configSupplyCurrentLimit(currentLimit);
     mBackLeft.configSupplyCurrentLimit(currentLimit);
@@ -52,16 +76,67 @@ public class Drivetrain extends SubsystemBase {
 
   }
 
-  public double getAngle(){
-    return mPigeon.getRotation2d().getDegrees();
+  public Rotation2d getAngle(){
+    return mPigeon.getRotation2d().times(-1);
   }
 
   public void drive(double xSpeed, double rSpeed, boolean turnInPlace){
-    mDifferentialDrive.curvatureDrive(xSpeed, rSpeed, turnInPlace);
+    mDifferentialDrive.curvatureDrive(xSpeed * mCurrentState.direction, -rSpeed * mCurrentState.direction, turnInPlace);
+  }
+
+  public void forward(double speed){
+    mFrontLeft.set(speed);
+    mFrontRight.set(speed);
+  }
+
+  public void resetGyro(){
+    mPigeon.reset();
+  }
+
+  public Command changeState(State state){
+    return new InstantCommand(() -> mCurrentState = state);
+  }
+
+  public class RotateRelative extends CommandBase {
+    private Rotation2d mAngle;
+    private Rotation2d mSetpoint;
+    private double kS = 0.05;
+    private double mError;
+    public RotateRelative(Rotation2d angle){
+      mAngle = angle;
+
+    }
+
+    @Override
+    public void initialize() {
+      mSetpoint = getAngle().rotateBy(mAngle);
+    }
+
+    @Override
+    public void execute() {
+      double error = (mSetpoint.getDegrees() - getAngle().getDegrees());
+      double output = MathUtil.clamp((error/180 + kS), -0.25, 0.25); 
+      mFrontLeft.set(output);
+      mFrontRight.set(-output);
+
+      SmartDashboard.putNumber("Setpoint", mSetpoint.getDegrees());
+      SmartDashboard.putNumber("Current Angle", getAngle().getDegrees());
+      SmartDashboard.putNumber("Error", error);
+
+      mError = error;
+    }
+
+    @Override
+    public boolean isFinished() {
+        return Math.abs(mError) < 2;
+    }
   }
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    SmartDashboard.putNumber("Front Left Motor", mFrontLeft.get());
+    SmartDashboard.putNumber("Back Left Motor", mBackLeft.get());
+    SmartDashboard.putNumber("Front Right Motor", mFrontRight.get());
+    SmartDashboard.putNumber("Back Right Motor", mBackRight.get());
   }
 }
