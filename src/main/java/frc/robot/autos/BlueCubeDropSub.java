@@ -11,14 +11,14 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Pivot;
 
-public class BlueCubeDropTaxi extends SequentialCommandGroup {
+public class BlueCubeDropSub extends SequentialCommandGroup {
 
   private final Drivetrain mDrivetrain;
   private final Intake mIntake;
   private final Pivot mPivot;
   
   /** Creates a new CubeDropTaxi. */
-  public BlueCubeDropTaxi(Drivetrain _drivetrain, Intake _intake, Pivot _pivot) {
+  public BlueCubeDropSub(Drivetrain _drivetrain, Intake _intake, Pivot _pivot) {
     mDrivetrain = _drivetrain;
     mIntake = _intake;
     mPivot = _pivot;
@@ -33,6 +33,7 @@ public class BlueCubeDropTaxi extends SequentialCommandGroup {
       new WaitCommand(1),
       mPivot.changeState(PivotConstants.State.CARRY),
       mIntake.changeState(IntakeConstants.State.STOP),
+      new WaitCommand(0.25),
       mDrivetrain.new RotateRelative(Rotation2d.fromDegrees(90)),
       new RunCommand(()-> mDrivetrain.drive(0.5, 0, false)).withTimeout(1)
     );

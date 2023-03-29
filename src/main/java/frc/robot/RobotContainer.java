@@ -9,20 +9,16 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.PivotConstants;
-import frc.robot.Constants.IntakeConstants.State;
-import frc.robot.autos.RedCubeDropTaxi;
+import frc.robot.autos.RedCubeDropSub;
 import frc.robot.controls.Deadbander;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
@@ -54,32 +50,11 @@ public class RobotContainer {
     );
 
 
-    mDriver.povUp().whileTrue(
+    mDriver.povRight().onTrue(
       new InstantCommand(
-        () -> mDrivetrain.forward(0.1),
-        mDrivetrain
+        mPivot::zeroEncoder,
+        mPivot
       )
-    );
-
-    mDriver.povUp().onFalse(
-      new InstantCommand(
-        () -> mDrivetrain.forward(0),
-        mDrivetrain
-      )
-    );
-
-    mDriver.a().onTrue(
-      mIntake.changeState(IntakeConstants.State.GRAB)
-    );
-    mDriver.a().onFalse(
-      mIntake.changeState(IntakeConstants.State.IDLE)
-    );
-
-    mDriver.b().onTrue(
-      mIntake.changeState(IntakeConstants.State.RELEASE)
-    );
-    mDriver.b().onFalse(
-      mIntake.changeState(IntakeConstants.State.IDLE)
     );
 
     mDriver.povUp().onTrue(
@@ -91,23 +66,7 @@ public class RobotContainer {
     );
 
 
-    mDriver.povRight().onTrue(
-      new InstantCommand(
-        mPivot::zeroEncoder,
-        mPivot
-      )
-    );
-
-    mDriver.x().onTrue(
-      mPivot.changeState(PivotConstants.State.L2)
-    );
-
-    mDriver.y().onTrue(
-      mPivot.changeState(PivotConstants.State.CARRY)
-    );
-
-
-    mDriver.y().onTrue(
+    mOperator.x().onTrue(
       new SequentialCommandGroup(
         mPivot.changeState(PivotConstants.State.FLOOR),
         new WaitCommand(0.25),
@@ -115,7 +74,7 @@ public class RobotContainer {
       )
     );
     
-    mDriver.y().onFalse(
+    mOperator.x().onFalse(
       new ParallelCommandGroup(
         mIntake.changeState(IntakeConstants.State.IDLE),
         mPivot.changeState(PivotConstants.State.CARRY)
@@ -125,7 +84,10 @@ public class RobotContainer {
   
 
     mOperator.a().onTrue(
-      mIntake.changeState(IntakeConstants.State.RELEASE)
+      new SequentialCommandGroup(
+        mPivot.changeState(PivotConstants.State.L1),
+        mIntake.changeState(IntakeConstants.State.L1RELEASE)
+      )
     );
 
     mOperator.a().onFalse(
@@ -152,7 +114,7 @@ public class RobotContainer {
     mOperator.y().onTrue(
       new SequentialCommandGroup(
         mPivot.changeState(PivotConstants.State.L2),
-        new WaitCommand(0.07),
+        new WaitCommand(0.0),
         mIntake.changeState(IntakeConstants.State.RELEASE)
       )
     );
@@ -185,8 +147,8 @@ public void configureAutoChooser() {
   mAutoChooser.setDefaultOption("Nothing", new SequentialCommandGroup[]{null, null});
 
   mAutoChooser.addOption("Cube L1 Taxi", new SequentialCommandGroup[]{
-    new RedCubeDropTaxi(mDrivetrain, mIntake, mPivot),
-    new RedCubeDropTaxi(mDrivetrain, mIntake, mPivot)
+    new RedCubeDropSub(mDrivetrain, mIntake, mPivot),
+    new RedCubeDropSub(mDrivetrain, mIntake, mPivot)
   });
 
   SmartDashboard.putData(mAutoChooser);

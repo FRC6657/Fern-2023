@@ -89,7 +89,7 @@ public class Constants {
           L2(0),
           STOP(0),
           STARTING(-80),
-          FLOOR(108),
+          FLOOR(110),
           CARRY(-80);
     
           public final double angle;

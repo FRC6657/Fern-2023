@@ -80,6 +80,10 @@ public class Drivetrain extends SubsystemBase {
     return mPigeon.getRotation2d().times(-1);
   }
 
+  public double getPitch(){
+    return mPigeon.getPitch();
+  }
+
   public void drive(double xSpeed, double rSpeed, boolean turnInPlace){
     mDifferentialDrive.curvatureDrive(xSpeed * mCurrentState.direction, -rSpeed * mCurrentState.direction, turnInPlace);
   }
@@ -132,11 +136,33 @@ public class Drivetrain extends SubsystemBase {
     }
   }
 
+  public class ChargeStationAuto extends CommandBase{
+
+    private double mPower = 0.2;
+
+    @Override
+    public void initialize() {
+    }
+
+    @Override
+    public void execute() {
+      mFrontLeft.set(mPower);
+      mFrontRight.set(mPower);
+    }
+
+    @Override
+    public boolean isFinished() {
+      return Math.abs(getPitch()) < 5;
+    }
+
+  }
+
   @Override
   public void periodic() {
     SmartDashboard.putNumber("Front Left Motor", mFrontLeft.get());
     SmartDashboard.putNumber("Back Left Motor", mBackLeft.get());
     SmartDashboard.putNumber("Front Right Motor", mFrontRight.get());
     SmartDashboard.putNumber("Back Right Motor", mBackRight.get());
+    SmartDashboard.putNumber("Pitch", getPitch());
   }
 }

@@ -11,14 +11,14 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Pivot;
 
-public class RedCubeDropTaxi extends SequentialCommandGroup {
+public class RedCubeDropSub extends SequentialCommandGroup {
 
   private final Drivetrain mDrivetrain;
   private final Intake mIntake;
   private final Pivot mPivot;
   
   /** Creates a new CubeDropTaxi. */
-  public RedCubeDropTaxi(Drivetrain _drivetrain, Intake _intake, Pivot _pivot) {
+  public RedCubeDropSub(Drivetrain _drivetrain, Intake _intake, Pivot _pivot) {
     mDrivetrain = _drivetrain;
     mIntake = _intake;
     mPivot = _pivot;
