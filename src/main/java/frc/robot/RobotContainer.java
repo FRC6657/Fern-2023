@@ -50,13 +50,6 @@ public class RobotContainer {
     );
 
 
-    mDriver.povRight().onTrue(
-      new InstantCommand(
-        mPivot::zeroEncoder,
-        mPivot
-      )
-    );
-
     mDriver.povUp().onTrue(
       mDrivetrain.changeState(DriveConstants.State.FORWARD)
     );
