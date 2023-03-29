@@ -61,6 +61,12 @@ public class RobotContainer {
       )
     );
 
+    mDriver.a().onTrue(
+      new InstantCommand(
+        () -> mDrivetrain.forward(0.5)
+      )
+    );
+
     mDriver.povUp().onFalse(
       new InstantCommand(
         () -> mDrivetrain.forward(0),
