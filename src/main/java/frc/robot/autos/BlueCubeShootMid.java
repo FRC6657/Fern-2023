@@ -27,16 +27,17 @@ public class BlueCubeShootMid extends SequentialCommandGroup {
 
     addCommands(
         new InstantCommand(mDrivetrain::resetGyro),
-      mPivot.changeState(PivotConstants.State.L2),
-      new WaitCommand(0.05),
-      mIntake.changeState(IntakeConstants.State.RELEASE),
-      new WaitCommand(1),
-      mPivot.changeState(PivotConstants.State.CARRY),
-      mIntake.changeState(IntakeConstants.State.STOP),
-      new WaitCommand(0.25),
-      mDrivetrain.new RotateRelative(Rotation2d.fromDegrees(90)),
-      new RunCommand(()-> mDrivetrain.drive(0.5, 0, false)).withTimeout(1),
-      mDrivetrain.new ChargeStationAuto().withTimeout(3)
+      // mPivot.changeState(PivotConstants.State.L2),
+      // new WaitCommand(0.05),
+      // mIntake.changeState(IntakeConstants.State.RELEASE),
+      // new WaitCommand(1),
+      // mPivot.changeState(PivotConstants.State.CARRY),
+      // mIntake.changeState(IntakeConstants.State.STOP),
+      // new WaitCommand(0.25),
+      // mDrivetrain.new RotateRelative(Rotation2d.fromDegrees(90)),
+      // new RunCommand(()-> mDrivetrain.drive(0.5, 0, false)).withTimeout(1),
+      new WaitCommand(5),
+      mDrivetrain.new ChargeStationAuto()
     );
 
   }

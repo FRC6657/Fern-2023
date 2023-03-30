@@ -146,13 +146,24 @@ public class Drivetrain extends SubsystemBase {
 
     @Override
     public void execute() {
+      // if(getPitch() > 0){
+      //   mFrontLeft.set(mPower);
+      //   mFrontRight.set(mPower);
+      // }
+      // else{
+      //   mFrontLeft.set(-mPower);
+      //   mFrontRight.set(-mPower);
+      // }
+
       mFrontLeft.set(mPower);
       mFrontRight.set(mPower);
+      
     }
 
     @Override
     public boolean isFinished() {
-      return Math.abs(getPitch()) < 5;
+      // return Math.abs(getPitch()) < 20;
+      return false;
     }
 
   }

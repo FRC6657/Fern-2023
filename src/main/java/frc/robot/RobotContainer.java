@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.PivotConstants;
+import frc.robot.autos.BlueCubeShootMid;
 import frc.robot.autos.RedCubeDropSub;
 import frc.robot.controls.Deadbander;
 import frc.robot.subsystems.Drivetrain;
@@ -142,6 +143,11 @@ public void configureAutoChooser() {
   mAutoChooser.addOption("Cube L1 Taxi", new SequentialCommandGroup[]{
     new RedCubeDropSub(mDrivetrain, mIntake, mPivot),
     new RedCubeDropSub(mDrivetrain, mIntake, mPivot)
+  });
+
+  mAutoChooser.addOption("Charge station test", new SequentialCommandGroup[]{
+    new BlueCubeShootMid(mDrivetrain, mIntake, mPivot),
+    new BlueCubeShootMid(mDrivetrain, mIntake, mPivot)
   });
 
   SmartDashboard.putData(mAutoChooser);
