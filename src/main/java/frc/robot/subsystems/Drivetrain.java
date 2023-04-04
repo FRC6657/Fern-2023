@@ -19,7 +19,8 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.RobotConstants;
-import frc.robot.Constants.DriveConstants.State;
+import frc.robot.Constants.DriveConstants.FrontState;
+import frc.robot.Constants.DriveConstants.RotateState;
 import frc.robot.Constants.RobotConstants.CAN;
 
 public class Drivetrain extends SubsystemBase {
@@ -29,7 +30,8 @@ public class Drivetrain extends SubsystemBase {
   private final WPI_TalonSRX mBackRight;
   private final WPI_PigeonIMU mPigeon;
   private final DifferentialDrive mDifferentialDrive;
-  private State mCurrentState;
+  private FrontState mCurrentState;
+  private RotateState mCurrentRotateState;
   public Drivetrain() {
 
     mFrontLeft = new WPI_TalonSRX(CAN.kFrontLeft);
@@ -64,7 +66,8 @@ public class Drivetrain extends SubsystemBase {
     mFrontRight.setInverted(InvertType.InvertMotorOutput);
     mBackRight.setInverted(InvertType.InvertMotorOutput);
 
-    mCurrentState = State.FORWARD;
+    mCurrentState = FrontState.FORWARD;
+    mCurrentRotateState = RotateState.POSITVIE;
 
     mDifferentialDrive = new DifferentialDrive(mFrontLeft, mFrontRight);
 
@@ -85,7 +88,13 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public void drive(double xSpeed, double rSpeed, boolean turnInPlace){
-    mDifferentialDrive.curvatureDrive(xSpeed * mCurrentState.direction, -rSpeed * mCurrentState.direction, turnInPlace);
+
+    if(turnInPlace){
+      rSpeed *= 0.75;
+    }
+
+    mDifferentialDrive.curvatureDrive(xSpeed * mCurrentState.direction, -rSpeed * mCurrentRotateState.direction, turnInPlace);
+    SmartDashboard.putNumber("Power", xSpeed);
   }
 
   public void forward(double speed){
@@ -97,8 +106,12 @@ public class Drivetrain extends SubsystemBase {
     mPigeon.reset();
   }
 
-  public Command changeState(State state){
-    return new InstantCommand(() -> mCurrentState = state);
+  public Command changeState(FrontState frontState){
+    return new InstantCommand(() -> mCurrentState = frontState);
+  }
+
+  public Command changeRotateState(RotateState RotateState){
+    return new InstantCommand(() -> mCurrentRotateState = RotateState);
   }
 
   public class RotateRelative extends CommandBase {
@@ -132,13 +145,11 @@ public class Drivetrain extends SubsystemBase {
 
     @Override
     public boolean isFinished() {
-        return Math.abs(mError) < 2;
+        return Math.abs(mError) < 1;
     }
   }
 
   public class ChargeStationAuto extends CommandBase{
-
-    private double mPower = 0.2;
 
     @Override
     public void initialize() {
@@ -146,24 +157,24 @@ public class Drivetrain extends SubsystemBase {
 
     @Override
     public void execute() {
-      // if(getPitch() > 0){
-      //   mFrontLeft.set(mPower);
-      //   mFrontRight.set(mPower);
-      // }
-      // else{
-      //   mFrontLeft.set(-mPower);
-      //   mFrontRight.set(-mPower);
-      // }
 
-      mFrontLeft.set(mPower);
-      mFrontRight.set(mPower);
-      
+      double kP = MathUtil.clamp(getPitch()/75, -0.2, 0.2);
+      if (getPitch() > 7){
+        mFrontLeft.set(kP);
+        mFrontRight.set(kP);
+      }
+
+      else if (getPitch() < -7){
+        mFrontLeft.set(kP);
+        mFrontRight.set(kP);
+      }
     }
 
     @Override
     public boolean isFinished() {
-      // return Math.abs(getPitch()) < 20;
+
       return false;
+
     }
 
   }
@@ -175,5 +186,7 @@ public class Drivetrain extends SubsystemBase {
     SmartDashboard.putNumber("Front Right Motor", mFrontRight.get());
     SmartDashboard.putNumber("Back Right Motor", mBackRight.get());
     SmartDashboard.putNumber("Pitch", getPitch());
+    SmartDashboard.putNumber("Foward", mCurrentState.direction);
+    SmartDashboard.putNumber("Turn", mCurrentRotateState.direction);
   }
 }

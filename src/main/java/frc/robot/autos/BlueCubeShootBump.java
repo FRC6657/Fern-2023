@@ -11,14 +11,14 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Pivot;
 
-public class BlueCubeDropSub extends SequentialCommandGroup {
+public class BlueCubeShootBump extends SequentialCommandGroup {
 
   private final Drivetrain mDrivetrain;
   private final Intake mIntake;
   private final Pivot mPivot;
   
   /** Creates a new CubeDropTaxi. */
-  public BlueCubeDropSub(Drivetrain _drivetrain, Intake _intake, Pivot _pivot) {
+  public BlueCubeShootBump(Drivetrain _drivetrain, Intake _intake, Pivot _pivot) {
     mDrivetrain = _drivetrain;
     mIntake = _intake;
     mPivot = _pivot;
@@ -26,16 +26,17 @@ public class BlueCubeDropSub extends SequentialCommandGroup {
     addRequirements(mDrivetrain, mIntake, mPivot);
 
     addCommands(
-        new InstantCommand(mDrivetrain::resetGyro),
-      mPivot.changeState(PivotConstants.State.L1),
-      new WaitCommand(0.5),
-      mIntake.changeState(IntakeConstants.State.L1RELEASE),
-      new WaitCommand(1),
+      new InstantCommand(mDrivetrain::resetGyro),
+      mPivot.changeState(PivotConstants.State.L2),
+      new WaitCommand(0.0),
+      mIntake.changeState(IntakeConstants.State.RELEASE),
+      new WaitCommand(0.75),
       mPivot.changeState(PivotConstants.State.CARRY),
       mIntake.changeState(IntakeConstants.State.STOP),
       new WaitCommand(0.25),
-      mDrivetrain.new RotateRelative(Rotation2d.fromDegrees(90)),
-      new RunCommand(()-> mDrivetrain.drive(0.5, 0, false)).withTimeout(1)
+      //I think this is backwards
+      mDrivetrain.new RotateRelative(Rotation2d.fromDegrees(90)).withTimeout(2),
+      new RunCommand(()-> mDrivetrain.drive(-0.3, 0, false)).withTimeout(4)
     );
 
   }

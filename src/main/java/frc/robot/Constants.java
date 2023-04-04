@@ -11,10 +11,9 @@ public class Constants {
     public static double kTurboForwardSpeed = 1.0;
     public static double kNormalForwardSpeed = 0.4;
     public static double kTurboTurningSpeed = 0.5;
-    public static double kNormalTurningSpeed = 0.5
-    ;
+    public static double kNormalTurningSpeed = 0.5;
 
-    public static enum State {
+    public static enum FrontState {
       FORWARD(1),
       REVERSE(-1);
 
@@ -23,11 +22,27 @@ public class Constants {
       /**
        * @param direction Motor Percentage
        */
-      State(double direction) {
+      FrontState(double direction) {
         this.direction = direction;
       }
 
     }
+
+    public static enum RotateState {
+      POSITVIE(1),
+      NEGATIVE(-1);
+
+      public final double direction;
+
+      /**
+       * @param direction Motor Percentage
+       */
+      RotateState(double direction) {
+        this.direction = direction;
+      }
+
+    }
+
 
   }
 
@@ -84,9 +99,9 @@ public class Constants {
     
 
         public static enum State {
-          SUBSTATION(-7),
-          L1(60),
-          L2(0),
+          SUBSTATION(5),
+          L1(45),
+          L2(-20),
           STOP(0),
           STARTING(-80),
           FLOOR(110),

@@ -11,14 +11,14 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Pivot;
 
-public class RedCubeDropSub extends SequentialCommandGroup {
+public class BlueCubeShootSub extends SequentialCommandGroup {
 
   private final Drivetrain mDrivetrain;
   private final Intake mIntake;
   private final Pivot mPivot;
   
   /** Creates a new CubeDropTaxi. */
-  public RedCubeDropSub(Drivetrain _drivetrain, Intake _intake, Pivot _pivot) {
+  public BlueCubeShootSub(Drivetrain _drivetrain, Intake _intake, Pivot _pivot) {
     mDrivetrain = _drivetrain;
     mIntake = _intake;
     mPivot = _pivot;
@@ -27,15 +27,16 @@ public class RedCubeDropSub extends SequentialCommandGroup {
 
     addCommands(
       new InstantCommand(mDrivetrain::resetGyro),
-      mPivot.changeState(PivotConstants.State.L1),
-      new WaitCommand(0.5),
-      mIntake.changeState(IntakeConstants.State.L1RELEASE),
-      new WaitCommand(1),
+      mPivot.changeState(PivotConstants.State.L2),
+      new WaitCommand(0.0),
+      mIntake.changeState(IntakeConstants.State.RELEASE),
+      new WaitCommand(0.75),
       mPivot.changeState(PivotConstants.State.CARRY),
       mIntake.changeState(IntakeConstants.State.STOP),
       new WaitCommand(0.25),
-      mDrivetrain.new RotateRelative(Rotation2d.fromDegrees(-90)),
-      new RunCommand(()-> mDrivetrain.drive(0.5, 0, false)).withTimeout(0.5)
+      new RunCommand(()-> mDrivetrain.drive(-0.3, 0, false)).withTimeout(0.5),
+      mDrivetrain.new RotateRelative(Rotation2d.fromDegrees(90)).withTimeout(1.5),
+      new RunCommand(()-> mDrivetrain.drive(-0.3, 0, false)).withTimeout(4)
     );
 
   }
