@@ -88,13 +88,7 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public void drive(double xSpeed, double rSpeed, boolean turnInPlace){
-
-    if(turnInPlace){
-      rSpeed *= 0.75;
-    }
-
-    mDifferentialDrive.curvatureDrive(xSpeed * mCurrentState.direction, -rSpeed * mCurrentRotateState.direction, turnInPlace);
-    SmartDashboard.putNumber("Power", xSpeed);
+    mDifferentialDrive.curvatureDrive(xSpeed * mCurrentState.direction, -rSpeed * mCurrentState.direction, turnInPlace);
   }
 
   public void forward(double speed){
@@ -151,23 +145,26 @@ public class Drivetrain extends SubsystemBase {
 
   public class ChargeStationAuto extends CommandBase{
 
+    private double mPower = 0.2;
+
     @Override
     public void initialize() {
     }
 
     @Override
     public void execute() {
+      // if(getPitch() > 0){
+      //   mFrontLeft.set(mPower);
+      //   mFrontRight.set(mPower);
+      // }
+      // else{
+      //   mFrontLeft.set(-mPower);
+      //   mFrontRight.set(-mPower);
+      // }
 
-      double kP = MathUtil.clamp(getPitch()/75, -0.2, 0.2);
-      if (getPitch() > 7){
-        mFrontLeft.set(kP);
-        mFrontRight.set(kP);
-      }
-
-      else if (getPitch() < -7){
-        mFrontLeft.set(kP);
-        mFrontRight.set(kP);
-      }
+      mFrontLeft.set(mPower);
+      mFrontRight.set(mPower);
+      
     }
 
     @Override
